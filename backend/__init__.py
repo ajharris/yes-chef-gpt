@@ -4,7 +4,7 @@ from .config import Config
 from .models import db, User
 from flask_login import LoginManager
 from .auth import auth_blueprint  # Ensure this blueprint is properly defined in your project
-from .routes import main_blueprint
+from .routes import main_blueprint, socketio
 
 # Initialize SocketIO with default settings
 socketio = SocketIO()

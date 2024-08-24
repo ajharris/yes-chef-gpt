@@ -1,12 +1,10 @@
-from flask import Blueprint, request, jsonify, send_from_directory, current_app, Flask
+from flask import Blueprint, request, jsonify, send_from_directory, current_app
+from flask_socketio import emit
 from backend.models import db, Recipe, Rating, Inventory
-from flask_socketio import SocketIO, emit
-import openai
+from . import socketio
 import os
-from config import Config
 
 main_blueprint = Blueprint('main', __name__)
-socketio = SocketIO()
 
 @main_blueprint.route('/about')
 def about():
@@ -17,8 +15,6 @@ def generate_recipe_route():
     data = request.json
     ingredients = data.get('ingredients')
     mood = data.get('mood')
-
-    # This is a placeholder for where you might integrate an AI model or a database query
     recipe = "Recipe based on ingredients: " + ingredients + " and mood: " + mood
     return jsonify({"recipe": recipe})
 
@@ -57,7 +53,6 @@ def update_inventory():
     data = request.json
     user_id = data['user_id']
     ingredients = data['ingredients']
-    # This is a simplification. You might need to handle quantities and existing entries differently.
     for ingredient in ingredients:
         inventory_item = Inventory(user_id=user_id, ingredient=ingredient)
         db.session.add(inventory_item)
@@ -85,19 +80,3 @@ def handle_disconnect():
 def handle_button_click(data):
     print('Button click received:', data)
     emit('button_click_response', {'message': 'Button was clicked!', 'status': 'success'})
-
-def create_app():
-    app = Flask(
-        __name__,
-        static_folder='../frontend/build',
-        template_folder='../frontend/build'
-    )
-    app.config.from_object(Config)
-    db.init_app(app)
-    socketio.init_app(app)
-
-    with app.app_context():
-        db.create_all()
-
-    app.register_blueprint(main_blueprint)
-    return app
