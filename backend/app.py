@@ -4,9 +4,9 @@ import os
 load_dotenv()  # Load environment variables from .env file.
 
 from flask import Flask
-from config import Config
-from models import db
-from routes import main_blueprint
+from .config import Config
+from .models import db
+from .routes import main_blueprint
 
 app = Flask(__name__, static_folder='../frontend/build', template_folder='../frontend/build')
 
