@@ -1,116 +1,68 @@
-# Byte-compiled / optimized / DLL files
+# General
+.DS_Store
+node_modules/
+/dist/
+/build/
+/logs/
+*.log
+*.cache
+
+# Environment files
+.env
+.env.*
+
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
 
-# C extensions
-*.so
+# Database
+*.db
+*.sql
+*.sqlite
 
-# Flask specific
-instance/
-.webassets-cache
+# Jupyter Notebook
+.ipynb_checkpoints
 
-# Environment variables
-.env
-.venv/
-backend/venv/
+# Frontend/build files
+/frontend/build/
+/public/
+*.bundle.js
+*.map
 
+# Heroku
+/heroku_output
+*.local
 
-# macOS
+# Virtual Environment
+venv/
+*.venv
+*.virtualenv
+
+# IDE specific
+.vscode/
+.idea/
+*.swp
+*sublime-project
+*sublime-workspace
+
+# Node.js
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Babel cache
+.babel.json
+.babel.*
+
+# MacOS Files
 .DS_Store
 
-# Node.js / React Native
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Logs
-logs/
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Dependency directories
-node_modules/
-
-# Optional npm cache directory
-.npm
-
-# Webpack files
-/dist/
-
-# React Native 
-ios/Pods/
-ios/build/
-android/.gradle/
-android/app/build/
-
-# Android Studio files
-local.properties
-.idea/
-*.iml
-
-# Xcode
-xcuserdata/
-*.xcworkspace
-*.xcuserstate
-build/
-DerivedData/
-*.hmap
-*.ipa
-*.dSYM.zip
-*.dSYM
-
-# Build artifacts
-*.apk
-*.aab
-*.aar
-*.app
-
-# Visual Studio Code
-.vscode/
-
-# Python virtual environment and package manager files
-venv/
-pip-log.txt
-pip-delete-this-directory.txt
-__pycache__/
-*.pyc
-
-# Python egg files
-*.egg
-*.egg-info/
-dist/
-build/
-eggs/
-
-# Python test logs
-.coverage
-.tox/
-.cache/
-nosetests.xml
-coverage.xml
-*.cover
-
-# Python distributions
-*.wheel
-
-# Jupyter Notebook checkpoints
-.ipynb_checkpoints/
-
-# Unit test / coverage reports
-htmlcov/
-.coverage
-.coverage.*
+# Misc
+*.sass-cache
 .cache
-.nox/
-pytest_cache/
-__pycache__/
-.pytest_cache/
-
-# Other Python files
-*.pyo
-*.pyd
-*$py.class
+*.log
+*.tmp
+tmp/
