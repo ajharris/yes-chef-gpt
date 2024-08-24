@@ -133,5 +133,8 @@ def serve(path):
     else:
         return send_from_directory(current_app.template_folder, 'index.html')
 
-
+@main_blueprint.route('/button-click', methods=['POST'])
+def handle_button_click():
+    # Logic to handle the button click
+    return jsonify({"message": "Button was clicked!", "status": "success"}), 200
 
