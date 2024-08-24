@@ -9,11 +9,8 @@ from .config import Config
 from .models import db
 from .routes import main_blueprint
 
-app = Flask(
-    __name__,
-    static_folder='../frontend/build/static',
-    template_folder='../frontend/build'
-)
+app = Flask(__name__, static_folder='../frontend/build', template_folder='../frontend/build')
+
 
 app.config.from_object(Config)
 db.init_app(app)
