@@ -1,11 +1,13 @@
-# backend/__init__.py
-
 from flask import Flask
+from flask_socketio import SocketIO
 from .config import Config
 from .models import db, User
 from flask_login import LoginManager
 from .auth import auth_blueprint  # Ensure this blueprint is properly defined in your project
 from .routes import main_blueprint
+
+# Initialize SocketIO with default settings
+socketio = SocketIO()
 
 def create_app():
     app = Flask(
@@ -30,6 +32,9 @@ def create_app():
     def load_user(user_id):
         return User.query.get(int(user_id))  # Fetch the user by ID
 
+    # Initialize Flask-SocketIO with the app
+    socketio.init_app(app, cors_allowed_origins="*")  # Modify cors settings as needed
+
     with app.app_context():
         db.create_all()  # Create database tables for all models
 
@@ -38,3 +43,8 @@ def create_app():
     app.register_blueprint(main_blueprint, url_prefix='/api')
 
     return app
+
+# If running directly, use the SocketIO server to run the app
+if __name__ == '__main__':
+    app = create_app()
+    socketio.run(app)
