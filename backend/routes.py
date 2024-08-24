@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, send_from_directory, render_template, current_app
-from models import db, Recipe, Rating, Inventory
+from backend.models import db, Recipe, Rating, Inventory
 import openai
 import os
 
