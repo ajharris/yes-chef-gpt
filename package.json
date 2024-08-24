@@ -1,0 +1,13 @@
+{
+    "name": "root",
+    "version": "1.0.0",
+    "scripts": {
+      "build": "cd frontend && npm install && npm run build",
+      "start": "cd frontend && npm start",
+      "heroku-postbuild": "npm run build"
+    },
+    "engines": {
+      "node": "22.6.0"
+    }
+  }
+  
