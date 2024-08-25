@@ -1,10 +1,10 @@
-from flask import Blueprint, request, jsonify, send_from_directory, current_app
-from flask_socketio import emit
+from flask import Blueprint, request, jsonify, send_from_directory, current_app, abort
+from flask_socketio import SocketIO, emit
 from backend.models import db, Recipe, Rating, Inventory
-from . import socketio
 import os
 
 main_blueprint = Blueprint('main', __name__)
+socketio = SocketIO()
 
 @main_blueprint.route('/about')
 def about():
@@ -15,21 +15,34 @@ def generate_recipe_route():
     data = request.json
     ingredients = data.get('ingredients')
     mood = data.get('mood')
+    if not ingredients or not mood:
+        abort(400, description="Missing required ingredients or mood")
     recipe = "Recipe based on ingredients: " + ingredients + " and mood: " + mood
     return jsonify({"recipe": recipe})
 
 @main_blueprint.route('/save-recipe', methods=['POST'])
 def save_recipe():
-    data = request.json
-    new_recipe = Recipe(
-        title=data['title'],
-        ingredients=data['ingredients'],
-        instructions=data['instructions'],
-        user_id=data.get('user_id')
-    )
-    db.session.add(new_recipe)
-    db.session.commit()
-    return jsonify({"message": "Recipe saved successfully!"})
+    try:
+        data = request.json
+        title = data.get('title')
+        ingredients = data.get('ingredients')
+        instructions = data.get('instructions')
+        user_id = data.get('user_id')
+
+        if not title or not ingredients or not instructions:
+            abort(400, description="Missing required fields")
+
+        new_recipe = Recipe(
+            title=title,
+            ingredients=ingredients,
+            instructions=instructions,
+            user_id=user_id
+        )
+        db.session.add(new_recipe)
+        db.session.commit()
+        return jsonify({"message": "Recipe saved successfully!"})
+    except Exception as e:
+        return jsonify({"error": "Unable to save recipe due to an error: {}".format(e)}), 500
 
 @main_blueprint.route('/get-recipes', methods=['GET'])
 def get_recipes():
@@ -39,10 +52,17 @@ def get_recipes():
 @main_blueprint.route('/rate-recipe', methods=['POST'])
 def rate_recipe():
     data = request.json
+    score = data.get('score')
+    user_id = data.get('user_id')
+    recipe_id = data.get('recipe_id')
+
+    if not 1 <= score <= 5:
+        return jsonify({"error": "Rating must be between 1 and 5"}), 400
+
     rating = Rating(
-        score=data['score'],
-        user_id=data['user_id'],
-        recipe_id=data['recipe_id']
+        score=score,
+        user_id=user_id,
+        recipe_id=recipe_id
     )
     db.session.add(rating)
     db.session.commit()
@@ -51,8 +71,9 @@ def rate_recipe():
 @main_blueprint.route('/update-inventory', methods=['POST'])
 def update_inventory():
     data = request.json
-    user_id = data['user_id']
-    ingredients = data['ingredients']
+    user_id = data.get('user_id')
+    ingredients = data.get('ingredients')
+
     for ingredient in ingredients:
         inventory_item = Inventory(user_id=user_id, ingredient=ingredient)
         db.session.add(inventory_item)
@@ -80,3 +101,4 @@ def handle_disconnect():
 def handle_button_click(data):
     print('Button click received:', data)
     emit('button_click_response', {'message': 'Button was clicked!', 'status': 'success'})
+
