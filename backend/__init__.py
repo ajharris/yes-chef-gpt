@@ -4,7 +4,9 @@ from .models import db, User
 from flask_login import LoginManager
 from .auth import auth_blueprint
 from .routes import main_blueprint
-from .extensions import socketio
+from flask_socketio import SocketIO
+
+socketio = SocketIO()
 
 def create_app():
     app = Flask(
@@ -12,7 +14,6 @@ def create_app():
         static_folder='../frontend/build', 
         template_folder='../frontend/build'
     )
-
     app.config.from_object(Config)
     db.init_app(app)
 

@@ -1,11 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 
-from flask_bcrypt import Bcrypt
-
-bcrypt = Bcrypt()
-
 db = SQLAlchemy()
+bcrypt = Bcrypt()
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -55,7 +52,7 @@ class Rating(db.Model):
 class Inventory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ingredient = db.Column(db.String(128), nullable=False)
-    quantity = db.Column(db.Float, nullable=True)  # You can expand this to track quantity if needed
+    quantity = db.Column(db.Float, nullable=True)  # This can be extended to handle inventory management
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
