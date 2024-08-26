@@ -1,7 +1,10 @@
+import React from 'react';
+
 export default function App() {
   return (
     <div className="App">
-      <button className="btn btn-primary">Click me!</button>
+      <button style={{ backgroundColor: 'red', color: 'white' }}>Click me!</button>
     </div>
   );
 }
+
