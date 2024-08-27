@@ -4,9 +4,6 @@ from .models import db, User
 from flask_login import LoginManager
 from .auth import auth_blueprint
 from .routes import main_blueprint
-from flask_socketio import SocketIO
-
-socketio = SocketIO()
 
 def create_app():
     app = Flask(
@@ -25,8 +22,6 @@ def create_app():
     def load_user(user_id):
         return User.query.get(int(user_id))
 
-    socketio.init_app(app, cors_allowed_origins="*")
-
     with app.app_context():
         db.create_all()
 
@@ -34,7 +29,3 @@ def create_app():
     app.register_blueprint(main_blueprint, url_prefix='/api')
 
     return app
-
-if __name__ == '__main__':
-    app = create_app()
-    socketio.run(app)

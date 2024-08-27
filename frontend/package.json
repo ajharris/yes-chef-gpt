@@ -9,7 +9,7 @@
     "web": "expo start --web",
     "build": "react-scripts build",
     "build-web": "webpack --config webpack.config.js",
-    "heroku-postbuild": "npm install && npm run build"
+    "heroku-postbuild": "npm install && npm run build-web"
   },
   "jest": {
     "preset": "jest-expo"
@@ -61,7 +61,7 @@
   },
   "private": true,
   "engines": {
-    "node": "22.6.0"
+    "node": ">=18.0.0 <23.0.0"
   },
   "browserslist": {
     "production": [

@@ -1,10 +1,17 @@
 from flask import Blueprint, request, jsonify, send_from_directory, current_app, abort
-from flask_socketio import SocketIO, emit
 from backend.models import db, Recipe, Rating, Inventory
 import os
 
 main_blueprint = Blueprint('main', __name__)
-socketio = SocketIO()
+
+@main_blueprint.route('/api/server-info', methods=['GET'])
+def server_info():
+    info = {
+        "server_name": "ChefGPT",
+        "version": "1.0.0",
+        "status": "Running"
+    }
+    return jsonify(info)
 
 @main_blueprint.route('/about')
 def about():
@@ -87,18 +94,3 @@ def serve(path):
         return send_from_directory(current_app.static_folder, path)
     else:
         return send_from_directory(current_app.template_folder, 'index.html')
-
-# SocketIO event handlers
-@socketio.on('connect')
-def handle_connect():
-    print('Client connected')
-
-@socketio.on('disconnect')
-def handle_disconnect():
-    print('Client disconnected')
-
-@socketio.on('button_click')
-def handle_button_click(data):
-    print('Button click received:', data)
-    emit('button_click_response', {'message': 'Button was clicked!', 'status': 'success'})
-
