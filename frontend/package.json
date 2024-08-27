@@ -9,7 +9,7 @@
     "web": "expo start --web",
     "build": "react-scripts build",
     "build-web": "webpack --config webpack.config.js",
-    "heroku-postbuild": "npm install && npm run build-web"
+    "heroku-postbuild": "npm install && npm run build"
   },
   "jest": {
     "preset": "jest-expo"
