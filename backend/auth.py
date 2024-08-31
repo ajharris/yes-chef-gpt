@@ -58,12 +58,14 @@ def signup_post():
     db.session.commit()
 
     login_user(new_user)
+    flash('Signup successful! Welcome, {}'.format(username))
     return redirect(url_for('main.home'))
 
 @auth_blueprint.route('/logout')
 @login_required
 def logout():
     logout_user()
+    flash('You have been logged out.')
     return redirect(url_for('main.home'))
 
 @auth_blueprint.route('/login/google')
@@ -80,47 +82,53 @@ def login_google():
 
 @auth_blueprint.route('/login/google/callback')
 def callback():
-    code = request.args.get("code")
-    google_provider_cfg = requests.get(google_discovery_url).json()
-    token_endpoint = google_provider_cfg["token_endpoint"]
+    try:
+        code = request.args.get("code")
+        google_provider_cfg = requests.get(google_discovery_url).json()
+        token_endpoint = google_provider_cfg["token_endpoint"]
 
-    token_url, headers, body = client.prepare_token_request(
-        token_endpoint,
-        authorization_response=request.url,
-        redirect_url=request.base_url,
-        code=code
-    )
-    token_response = requests.post(
-        token_url,
-        headers=headers,
-        data=body,
-        auth=(google_client_id, google_client_secret),
-    )
-
-    client.parse_request_body_response(token_response.text)
-
-    userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
-    uri, headers, body = client.add_token(userinfo_endpoint)
-    userinfo_response = requests.get(uri, headers=headers, data=body)
-
-    if userinfo_response.json().get("email_verified"):
-        unique_id = userinfo_response.json()["sub"]
-        users_email = userinfo_response.json()["email"]
-        picture = userinfo_response.json()["picture"]
-        users_name = userinfo_response.json()["given_name"]
-    else:
-        return "User email not available or not verified by Google.", 400
-
-    user = User.query.filter_by(email=users_email).first()
-
-    if not user:
-        user = User(
-            email=users_email, username=users_name,
-            password_hash=generate_password_hash(os.urandom(24))
+        token_url, headers, body = client.prepare_token_request(
+            token_endpoint,
+            authorization_response=request.url,
+            redirect_url=request.base_url,
+            code=code
         )
-        db.session.add(user)
-        db.session.commit()
+        token_response = requests.post(
+            token_url,
+            headers=headers,
+            data=body,
+            auth=(google_client_id, google_client_secret),
+        )
 
-    login_user(user)
+        client.parse_request_body_response(token_response.text)
 
-    return redirect(url_for('main.home'))
+        userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
+        uri, headers, body = client.add_token(userinfo_endpoint)
+        userinfo_response = requests.get(uri, headers=headers, data=body)
+
+        if userinfo_response.json().get("email_verified"):
+            unique_id = userinfo_response.json()["sub"]
+            users_email = userinfo_response.json()["email"]
+            picture = userinfo_response.json()["picture"]
+            users_name = userinfo_response.json()["given_name"]
+        else:
+            flash('Email not verified by Google.')
+            return redirect(url_for('auth.login'))
+
+        user = User.query.filter_by(email=users_email).first()
+
+        if not user:
+            user = User(
+                email=users_email, username=users_name,
+                password_hash=generate_password_hash(os.urandom(24))
+            )
+            db.session.add(user)
+            db.session.commit()
+
+        login_user(user)
+        flash('Logged in successfully! Welcome, {}'.format(users_name))
+        return redirect(url_for('main.home'))
+
+    except Exception as e:
+        flash('Login failed due to an error. Please try again.')
+        return redirect(url_for('auth.login'))

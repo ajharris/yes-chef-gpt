@@ -1,6 +1,12 @@
 // src/App.js
 
 import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import LoginAbout from './components/LoginAbout';
+import Signup from './components/Signup';
+import Logout from './components/Logout';
+import PrivateRoute from './components/PrivateRoute';
+import Home from './components/Home';
 import TestConnection from './components/TestConnection';
 
 function App() {
@@ -19,10 +25,19 @@ function App() {
     };
 
     return (
-        <div className="App">
-            <h1>Welcome to YesChefGPT</h1>
-            <TestConnection testConnection={testConnection} />
-        </div>
+        <Router>
+            <div className="App">
+                <h1>Welcome to YesChefGPT</h1>
+                <TestConnection testConnection={testConnection} />
+                <Routes>
+                    <Route path="/login" element={<LoginAbout />} />
+                    <Route path="/signup" element={<Signup />} />
+                    <Route path="/logout" element={<Logout />} />
+                    <PrivateRoute path="/home" element={<Home />} />
+                    <Route path="/" element={<LoginAbout />} /> {/* Default route */}
+                </Routes>
+            </div>
+        </Router>
     );
 }
 
