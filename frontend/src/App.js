@@ -20,7 +20,7 @@ function App() {
 
     return (
         <div className="App">
-            <h1>Welcome to ChefGPT</h1>
+            <h1>Welcome to YesChefGPT</h1>
             <TestConnection testConnection={testConnection} />
         </div>
     );
