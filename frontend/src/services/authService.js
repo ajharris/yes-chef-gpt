@@ -12,6 +12,7 @@ export const login = async (email, password) => {
         }
         return response.data;
     } catch (error) {
+        console.error('Login error:', error); // Log the error for debugging
         throw new Error('Login failed. Please check your credentials.');
     }
 };
@@ -26,6 +27,7 @@ export const signup = async (email, username, password) => {
         }
         return response.data;
     } catch (error) {
+        console.error('Signup error:', error); // Log the error for debugging
         throw new Error('Signup failed. Please try again.');
     }
 };
@@ -37,6 +39,7 @@ export const logout = async () => {
         localStorage.removeItem('authToken'); // Clear token from localStorage
         localStorage.removeItem('user'); // Clear user data
     } catch (error) {
+        console.error('Logout error:', error); // Log the error for debugging
         throw new Error('Logout failed. Please try again.');
     }
 };
