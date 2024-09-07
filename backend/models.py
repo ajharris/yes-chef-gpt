@@ -1,6 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 
+from datetime import datetime, timedelta
+
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 
@@ -57,3 +59,27 @@ class Inventory(db.Model):
 
     def __repr__(self):
         return f'<Inventory {self.ingredient}>'
+    
+class Reminder(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    last_cleaned_stove = db.Column(db.DateTime, default=datetime.utcnow)
+    last_cleaned_fridge = db.Column(db.DateTime, default=datetime.utcnow)
+    next_reminder_stove = db.Column(db.DateTime)
+    next_reminder_fridge = db.Column(db.DateTime)
+    user = db.relationship('User', backref=db.backref('reminders', lazy=True))
+
+    def __init__(self, user_id):
+        self.user_id = user_id
+        self.next_reminder_stove = self.last_cleaned_stove + timedelta(days=30)  # Example: Remind every 30 days
+        self.next_reminder_fridge = self.last_cleaned_fridge + timedelta(days=30)
+
+    def update_reminder_stove(self):
+        self.last_cleaned_stove = datetime.utcnow()
+        self.next_reminder_stove = self.last_cleaned_stove + timedelta(days=30)
+        db.session.commit()
+
+    def update_reminder_fridge(self):
+        self.last_cleaned_fridge = datetime.utcnow()
+        self.next_reminder_fridge = self.last_cleaned_fridge + timedelta(days=30)
+        db.session.commit()

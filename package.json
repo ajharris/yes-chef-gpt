@@ -2,7 +2,9 @@
     "name": "chefgpt",
     "version": "1.0.0",
     "scripts": {
-      "heroku-postbuild": "npm install --prefix frontend && npm run build --prefix frontend"
+        "heroku-postbuild": "npm install --prefix frontend && npm run build --prefix frontend"
+    },
+    "dependencies": {
+        "react-router-dom": "^6.26.1"
     }
-  }
-  
+}
