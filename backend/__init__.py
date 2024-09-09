@@ -2,31 +2,29 @@ from flask import Flask, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
+from flask_cors import CORS
 from dotenv import load_dotenv
-from flask_cors import CORS  # For handling CORS issues with the frontend
 import os
 
-# Load environment variables from a .env file if it exists
+# Load environment variables from .env
 load_dotenv()
 
-# Initialize extensions without passing the app yet
+# Initialize extensions
 db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
 
-# Initialize the login view
-login_manager.login_view = 'auth.login'  # Redirect to the login page for protected routes
-
+login_manager.login_view = 'auth.login'
 
 def create_app():
     # Create Flask app instance
     app = Flask(
         __name__,
         static_folder='../frontend/build',  # Serve React static files
-        template_folder='../frontend/build'  # Use React build folder for templates
+        template_folder='../frontend/build'
     )
 
-    # Load configuration from the Config object
+    # Load configuration from Config class
     app.config.from_object('backend.config.Config')
 
     # Initialize extensions
@@ -34,24 +32,26 @@ def create_app():
     migrate.init_app(app, db)
     login_manager.init_app(app)
 
-    # Enable CORS (optional but recommended if React frontend makes API requests)
+    # Enable CORS for cross-origin requests
     CORS(app)
 
     # Import and register blueprints
-    from .auth import auth_blueprint
+    from .routes.auth import auth_blueprint
     from .routes.recipes import recipes_blueprint
     from .routes.ratings import ratings_blueprint
     from .routes.inventory import inventory_blueprint
+    from .routes.chatgpt import chatgpt_blueprint  # Import the chatgpt blueprint
     from .routes.main import main_blueprint
 
-    # Register API Blueprints with their URL prefixes
+    # Register API Blueprints
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
     app.register_blueprint(recipes_blueprint, url_prefix='/api/recipes')
     app.register_blueprint(ratings_blueprint, url_prefix='/api/ratings')
     app.register_blueprint(inventory_blueprint, url_prefix='/api/inventory')
-    app.register_blueprint(main_blueprint)  # No URL prefix for the main blueprint
+    app.register_blueprint(chatgpt_blueprint, url_prefix='/api')  # Register chatgpt blueprint
+    app.register_blueprint(main_blueprint)
 
-    # Serve React frontend from the build folder for all unmatched routes
+    # Serve React frontend for non-API routes
     @app.route('/', defaults={'path': ''})
     @app.route('/<path:path>')
     def serve_react_app(path):

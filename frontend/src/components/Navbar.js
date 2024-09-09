@@ -3,34 +3,31 @@ import { Link, useNavigate } from 'react-router-dom';
 import { isAuthenticated, logout } from '../services/authService';
 
 function Navbar() {
-    const navigate = useNavigate();  // Ensure this is used inside a Router
+    const navigate = useNavigate();
 
     const handleLogout = async () => {
         try {
             await logout();
-            navigate('/login');  // Correct usage inside an async function
+            navigate('/login');  // Redirect after successful logout
         } catch (error) {
             console.error('Logout failed:', error);
         }
     };
 
     return (
-        <div>
-            <h1>Hello World</h1>
-            <nav style={{ padding: '10px', borderBottom: '1px solid #ccc' }}>
-                <Link to="/home" style={{ marginRight: '15px' }}>Home</Link>
-                <Link to="/about" style={{ marginRight: '15px' }}>About</Link>
+        <div className="navbar">
+            <nav>
+                <Link to="/home" className="nav-link">Home</Link>
+                <Link to="/about" className="nav-link">About</Link>
                 {isAuthenticated() ? (
                     <>
-                        <Link to="/profile" style={{ marginRight: '15px' }}>Profile</Link>
-                        <button onClick={handleLogout} style={{ marginRight: '15px', cursor: 'pointer' }}>
-                            Logout
-                        </button>
+                        <Link to="/profile" className="nav-link">Profile</Link>
+                        <button onClick={handleLogout} className="nav-button">Logout</button>
                     </>
                 ) : (
                     <>
-                        <Link to="/login" style={{ marginRight: '15px' }}>Login</Link>
-                        <Link to="/signup" style={{ marginRight: '15px' }}>Signup</Link>
+                        <Link to="/login" className="nav-link">Login</Link>
+                        <Link to="/signup" className="nav-link">Signup</Link>
                     </>
                 )}
             </nav>

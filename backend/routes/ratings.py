@@ -1,23 +1,37 @@
 from flask import Blueprint, request, jsonify
-from backend.models import db, Rating
 
 ratings_blueprint = Blueprint('ratings', __name__)
 
-@ratings_blueprint.route('/rate-recipe', methods=['POST'])
-def rate_recipe():
+# Get all ratings for a recipe
+@ratings_blueprint.route('/<int:recipe_id>', methods=['GET'])
+def get_ratings(recipe_id):
+    from backend import db
+    from backend.models import Rating, Recipe  # Import models inside the function
+
+    recipe = Recipe.query.get(recipe_id)
+    if not recipe:
+        return jsonify({'error': 'Recipe not found'}), 404
+
+    ratings = Rating.query.filter_by(recipe_id=recipe_id).all()
+    rating_list = [{"id": rating.id, "rating": rating.rating, "comment": rating.comment} for rating in ratings]
+    return jsonify(rating_list), 200
+
+# Create a new rating
+@ratings_blueprint.route('/<int:recipe_id>', methods=['POST'])
+def create_rating(recipe_id):
+    from backend import db
+    from backend.models import Rating, Recipe
+
+    recipe = Recipe.query.get(recipe_id)
+    if not recipe:
+        return jsonify({'error': 'Recipe not found'}), 404
+
     data = request.json
-    score = data.get('score')
-    user_id = data.get('user_id')
-    recipe_id = data.get('recipe_id')
+    rating = data.get('rating')
+    comment = data.get('comment')
 
-    if not 1 <= score <= 5:
-        return jsonify({"error": "Rating must be between 1 and 5"}), 400
-
-    rating = Rating(
-        score=score,
-        user_id=user_id,
-        recipe_id=recipe_id
-    )
-    db.session.add(rating)
+    new_rating = Rating(recipe_id=recipe_id, rating=rating, comment=comment)
+    db.session.add(new_rating)
     db.session.commit()
-    return jsonify({"message": "Rating submitted successfully!"})
+
+    return jsonify({"message": "Rating created successfully"}), 201
