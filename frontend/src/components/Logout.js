@@ -1,21 +1,14 @@
-// src/components/Logout.js
-
+// frontend/src/components/Logout.js
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { logout } from '../services/authService';
+import authService from '../services/authService';
 
-function Logout() {
-    const navigate = useNavigate();
+const Logout = () => {
+  useEffect(() => {
+    authService.logout();
+    window.location.href = '/login';  // Redirect to login after logout
+  }, []);
 
-    useEffect(() => {
-        const performLogout = async () => {
-            await logout();
-            navigate('/login'); // Redirect to login page after logout
-        };
-        performLogout();
-    }, [navigate]);
-
-    return <div>Logging out...</div>;
-}
+  return <div>Logging out...</div>;
+};
 
 export default Logout;

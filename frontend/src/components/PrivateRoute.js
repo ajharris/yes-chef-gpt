@@ -1,11 +1,15 @@
-// src/components/PrivateRoute.js
-
+// frontend/src/components/PrivateRoute.js
 import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { isAuthenticated } from '../services/authService';  // Assume this checks if the user is authenticated
+import { Route, Navigate } from 'react-router-dom';
+import authService from '../services/authService';
 
-function PrivateRoute({ element: Component }) {
-    return isAuthenticated() ? <Component /> : <Navigate to="/login" />;
-}
+const PrivateRoute = ({ component: Component, ...rest }) => (
+  <Route
+    {...rest}
+    render={(props) =>
+      authService.getCurrentUser() ? <Component {...props} /> : <Navigate to="/login" />
+    }
+  />
+);
 
 export default PrivateRoute;

@@ -7,9 +7,12 @@ export const login = async (email, password) => {
     try {
         const response = await axios.post(`${API_URL}/login`, { email, password });
         if (response.data.token) {
-            const expirationTime = Date.now() + response.data.expires_in * 1000; // Assuming `expires_in` is in seconds
+            // If backend provides `expires_in`, store expiration time
+            if (response.data.expires_in) {
+                const expirationTime = Date.now() + response.data.expires_in * 1000;  // assuming expires_in is in seconds
+                localStorage.setItem('tokenExpiration', expirationTime);
+            }
             localStorage.setItem('authToken', response.data.token);
-            localStorage.setItem('tokenExpiration', expirationTime);
             localStorage.setItem('user', JSON.stringify(response.data.user)); 
         }
         return response.data;
@@ -19,15 +22,17 @@ export const login = async (email, password) => {
     }
 };
 
+// Check if the user is authenticated by verifying token and expiration
 export const isAuthenticated = () => {
     const token = localStorage.getItem('authToken');
     const tokenExpiration = localStorage.getItem('tokenExpiration');
-    if (token && tokenExpiration && Date.now() < tokenExpiration) {
+    if (token && (!tokenExpiration || Date.now() < tokenExpiration)) {
         return true;
     }
     return false;
 };
 
+// Log out the user and clear authentication data from localStorage
 export const logout = async () => {
     try {
         await axios.post(`${API_URL}/logout`);
@@ -40,9 +45,7 @@ export const logout = async () => {
     }
 };
 
-
-// Sign up the user and store the token in localStorage
-
+// Sign up the user and optionally store the token in localStorage
 export const signup = async (email, username, password) => {
     try {
         const response = await axios.post(`${API_URL}/signup`, {
@@ -56,17 +59,22 @@ export const signup = async (email, username, password) => {
         }
         return response.data;
     } catch (error) {
-        // Log the entire error object for better debugging
         console.error('Signup error:', error.response ? error.response.data : error);
         throw new Error('Signup failed. Please try again.');
     }
 };
-
-
-
 
 // Optionally, get the logged-in user data
 export const getUser = () => {
     const user = localStorage.getItem('user');
     return user ? JSON.parse(user) : null;
 };
+
+export default {
+    login,
+    signup,
+    logout,
+    isAuthenticated,
+    getUser
+  };
+  
