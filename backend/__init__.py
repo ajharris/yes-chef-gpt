@@ -1,34 +1,26 @@
+# backend/__init__.py
+
 from flask import Flask, send_from_directory
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
-from flask_migrate import Migrate
-from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
 
+# Import extensions
+from .extensions import db, bcrypt, migrate, login_manager
+
 # Load environment variables from .env
 load_dotenv()
 
-# Initialize extensions
-db = SQLAlchemy()
-bcrypt = Bcrypt()
-migrate = Migrate()
-login_manager = LoginManager()
-
-login_manager.login_view = 'auth.login'
-login_manager.session_protection = "strong"
-
-def create_app():
+def create_app(config_class='backend.config.Config'):
     # Create Flask app instance
     app = Flask(__name__,
-                static_folder='../frontend/build',  # Serve React static files
+                static_folder='../frontend/build',
                 template_folder='../frontend/build')
 
-    # Load configuration from Config class
-    app.config.from_object('backend.config.Config')
+    # Load configuration
+    app.config.from_object(config_class)
 
-    # Initialize extensions
+    # Initialize extensions with the app
     db.init_app(app)
     bcrypt.init_app(app)
     migrate.init_app(app, db)
@@ -56,10 +48,6 @@ def create_app():
     @app.route('/', defaults={'path': ''})
     @app.route('/<path:path>')
     def serve_react_app(path):
-        """
-        Serve the React frontend for any non-API route.
-        All frontend routing will be handled by React Router.
-        """
         if path != '' and os.path.exists(app.static_folder + '/' + path):
             return send_from_directory(app.static_folder, path)
         else:
@@ -70,9 +58,5 @@ def create_app():
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
-
-    # Ensure the app context is available and tables are created (for development)
-    with app.app_context():
-        db.create_all()
 
     return app

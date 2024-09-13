@@ -1,47 +1,26 @@
 from flask import Blueprint, request, jsonify
+from flask_login import login_required, current_user
+from backend.models import Inventory
+from backend.extensions import db
 
 inventory_blueprint = Blueprint('inventory', __name__)
 
-# Get all inventory items
-@inventory_blueprint.route('/', methods=['GET'])
+@inventory_blueprint.route('/inventory', methods=['GET'])
+@login_required
 def get_inventory():
-    from backend import db
-    from backend.models import InventoryItem  # Import models inside the function
+    items = Inventory.query.filter_by(user_id=current_user.id).all()
+    return jsonify([item.serialize() for item in items])
 
-    inventory_items = InventoryItem.query.all()
-    item_list = [{"id": item.id, "name": item.name, "quantity": item.quantity} for item in inventory_items]
-    return jsonify(item_list), 200
-
-# Add a new inventory item
-@inventory_blueprint.route('/', methods=['POST'])
-def add_inventory_item():
-    from backend import db
-    from backend.models import InventoryItem
-
-    data = request.json
-    name = data.get('name')
-    quantity = data.get('quantity')
-
-    new_item = InventoryItem(name=name, quantity=quantity)
+@inventory_blueprint.route('/inventory', methods=['POST'])
+@login_required
+def add_inventory():
+    data = request.get_json()
+    new_item = Inventory(
+        user_id=current_user.id,
+        ingredient=data['ingredient'],
+        quantity=data['quantity'],
+        unit=data['unit']
+    )
     db.session.add(new_item)
     db.session.commit()
-
-    return jsonify({"message": "Item added to inventory"}), 201
-
-# Update an inventory item
-@inventory_blueprint.route('/<int:item_id>', methods=['PUT'])
-def update_inventory_item(item_id):
-    from backend import db
-    from backend.models import InventoryItem
-
-    item = InventoryItem.query.get(item_id)
-    if not item:
-        return jsonify({"error": "Item not found"}), 404
-
-    data = request.json
-    item.name = data.get('name')
-    item.quantity = data.get('quantity')
-
-    db.session.commit()
-
-    return jsonify({"message": "Inventory item updated"}), 200
+    return jsonify(new_item.serialize()), 201

@@ -13,7 +13,7 @@ function App() {
     <Router>
       <div>
         <Navbar />
-        <RecipePromptPage />  {/* Replace PromptInput and ChatResponse with RecipePromptPage */}
+        <RecipePromptPage />
         <Routes>
           <Route path="/home" element={<Home />} />
           <Route path="/about" element={<About />} />
