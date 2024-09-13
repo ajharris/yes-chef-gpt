@@ -1,0 +1,31 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.5, pytest-8.3.2, pluggy-1.5.0
+rootdir: /Users/andrewharris/Dropbox/ChefGPT
+plugins: cov-5.0.0, flask-1.3.0, anyio-4.4.0, mock-3.14.0
+collected 3 items
+
+backend/tests/test_auth_routes.py ..F                                    [100%]
+
+=================================== FAILURES ===================================
+_________________________________ test_logout __________________________________
+
+client = <FlaskClient <Flask 'backend'>>
+init_database = <SQLAlchemy sqlite:///:memory:>
+
+    def test_logout(client, init_database):
+        # First log in
+        client.post('/login', json={
+            'email': 'test@example.com',
+            'password': 'testpassword'
+        })
+    
+        # Then log out
+        response = client.post('/logout')
+>       assert response.status_code == 200
+E       assert 405 == 200
+E        +  where 405 = <WrapperTestResponse streamed [405 METHOD NOT ALLOWED]>.status_code
+
+backend/tests/test_auth_routes.py:36: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_auth_routes.py::test_logout - assert 405 == 200
+========================= 1 failed, 2 passed in 2.71s ==========================

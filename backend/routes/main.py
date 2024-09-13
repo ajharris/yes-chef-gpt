@@ -1,7 +1,7 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, render_template
 
 main_blueprint = Blueprint('main', __name__)
 
-@main_blueprint.route('/status', methods=['GET'])
-def status():
-    return jsonify({"status": "API is running"}), 200
+@main_blueprint.route('/')
+def index():
+    return render_template('index.html')

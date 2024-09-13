@@ -1,35 +1,19 @@
-import os
-from openai import OpenAI
+import openai
 from flask import Blueprint, request, jsonify
-from dotenv import load_dotenv
-
-# Load environment variables from .env
-load_dotenv()
+from flask_login import login_required
 
 chatgpt_blueprint = Blueprint('chatgpt', __name__)
 
-# Initialize OpenAI client with API key
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-@chatgpt_blueprint.route('/chatgpt', methods=['POST'])
-def get_chatgpt_response():
-    data = request.json
+@chatgpt_blueprint.route('/query', methods=['POST'])
+@login_required
+def query_chatgpt():
+    data = request.get_json()
     prompt = data.get('prompt')
 
-    if not prompt:
-        return jsonify({'error': 'Prompt is required'}), 400
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=prompt,
+        max_tokens=150
+    )
 
-    try:
-        # Send the prompt to the OpenAI API using the new API interface
-        response = client.chat.completions.create(
-            model="gpt-4",  # Use GPT-3.5 turbo or GPT-4
-            messages=[{"role": "user", "content": prompt}]
-        )
-
-        # Extract the message content
-        chatgpt_response = response.choices[0].message.content.strip()
-
-        return jsonify({"response": chatgpt_response}), 200
-
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    return jsonify(response.choices[0].text)
