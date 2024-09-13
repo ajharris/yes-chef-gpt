@@ -4,6 +4,8 @@ import Navbar from './components/Navbar';
 import RecipePromptPage from './components/RecipePromptPage';  // Import RecipePromptPage
 import Home from './components/Home';
 import About from './components/About';
+import Signup from './components/Signup';  // Import Signup component
+import Login from './components/Login';    // Import Login component
 import './App.css';
 
 function App() {
@@ -15,6 +17,8 @@ function App() {
         <Routes>
           <Route path="/home" element={<Home />} />
           <Route path="/about" element={<About />} />
+          <Route path="/signup" element={<Signup />} />  {/* Signup route */}
+          <Route path="/login" element={<Login />} />    {/* Login route */}
           <Route path="/" element={<Home />} />  {/* Default Route */}
         </Routes>
       </div>
