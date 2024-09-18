@@ -1,36 +1,13 @@
-import React, { useState } from 'react';
-import PromptInput from './PromptInput';  // Make sure this path is correct
+import React from 'react';
+import QueryGPT from './QueryGPT';  // Import the QueryGPT component
 
-function RecipePromptPage() {
-  const [response, setResponse] = useState('');
-
-  const handlePromptSubmit = async (prompt) => {
-    try {
-      const result = await fetch('http://localhost:5000/api/chatgpt', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ prompt }),
-      });
-      const data = await result.json();
-      setResponse(data.response);
-    } catch (error) {
-      console.error('Error submitting prompt:', error);
-    }
-  };
-
-  console.log('handlePromptSubmit:', handlePromptSubmit);  // Check if this logs in the console
-
+const RecipePromptPage = () => {
   return (
     <div>
-      <PromptInput onSubmit={handlePromptSubmit} />
-      <div>
-        <h3>ChatGPT Response:</h3>
-        <p>{response}</p>
-      </div>
+      <h2>Get a Recipe Idea</h2>
+      <QueryGPT />
     </div>
   );
-}
+};
 
 export default RecipePromptPage;

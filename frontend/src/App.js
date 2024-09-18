@@ -13,12 +13,12 @@ function App() {
     <Router>
       <div>
         <Navbar />
-        <RecipePromptPage />
         <Routes>
           <Route path="/home" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/signup" element={<Signup />} />  {/* Signup route */}
           <Route path="/login" element={<Login />} />    {/* Login route */}
+          <Route path="/recipe-prompt" element={<RecipePromptPage />} />  {/* Recipe Prompt Query route */}
           <Route path="/" element={<Home />} />  {/* Default Route */}
         </Routes>
       </div>

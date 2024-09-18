@@ -22,6 +22,7 @@ function Navbar() {
                 {isAuthenticated() ? (
                     <>
                         <Link to="/profile" className="nav-link">Profile</Link>
+                        <Link to="/recipe-prompt" className="nav-link">Get a Recipe</Link> {/* New Recipe Prompt Link */}
                         <button onClick={handleLogout} className="nav-button">Logout</button>
                     </>
                 ) : (

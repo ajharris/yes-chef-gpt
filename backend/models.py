@@ -55,12 +55,19 @@ class Rating(db.Model):
 
 class Inventory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    ingredient = db.Column(db.String(128), nullable=False)
-    quantity = db.Column(db.Float, nullable=True)  # This can be extended to handle inventory management
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    ingredient = db.Column(db.String(100), nullable=False)
+    quantity = db.Column(db.Integer, nullable=True)  # Allow null values
+    unit = db.Column(db.String(20), nullable=True)  # Allow null values
 
-    def __repr__(self):
-        return f'<Inventory {self.ingredient}>'
+    def serialize(self):
+        return {
+            'id': self.id,
+            'ingredient': self.ingredient,
+            'quantity': self.quantity,  # Could be null
+            'unit': self.unit  # Could be null
+        }
+
     
 class Reminder(db.Model):
     id = db.Column(db.Integer, primary_key=True)
