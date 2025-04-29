@@ -8,8 +8,17 @@ import os
 # Import extensions
 from .extensions import db, bcrypt, migrate, login_manager
 
-# Load environment variables from .env
+# Load environment variables from a .env file
 load_dotenv()
+
+# Example: Accessing an environment variable
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+
+# Log the status of the OPENAI_API_KEY
+if OPENAI_API_KEY:
+    print("OPENAI_API_KEY successfully loaded.")
+else:
+    print("Warning: OPENAI_API_KEY is not set.")
 
 def create_app(config_class='backend.config.Config'):
     # Create Flask app instance
@@ -22,6 +31,9 @@ def create_app(config_class='backend.config.Config'):
 
     # Initialize extensions with the app
     db.init_app(app)
+    with app.app_context():
+        db.create_all()  # Ensure tables are created during app initialization
+
     bcrypt.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
@@ -54,7 +66,7 @@ def create_app(config_class='backend.config.Config'):
             return send_from_directory(app.static_folder, 'index.html')
 
     # User loader for Flask-Login
-    from .models import User
+    from .models import User, Recipe, Rating, Inventory  # Ensure all models are imported
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
