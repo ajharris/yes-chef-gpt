@@ -27,6 +27,8 @@ class Config:
     GOOGLE_REDIRECT_URI = os.environ.get('GOOGLE_REDIRECT_URI')
     FACEBOOK_REDIRECT_URI = os.environ.get('FACEBOOK_REDIRECT_URI')
 
+    OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', 'your_openai_api_key_here')
+
 # Test the database connection
 import psycopg2
 from psycopg2 import OperationalError
