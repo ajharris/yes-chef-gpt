@@ -7,6 +7,7 @@ from flask import Flask
 from flask.testing import FlaskClient
 from flask_login import LoginManager, UserMixin
 from backend.routes.chatgpt import chatgpt_blueprint
+from backend.tests.conftest import mock_current_user
 
 class MockUser(UserMixin):
     def __init__(self, id):
@@ -32,6 +33,7 @@ def app():
 def client(app):
     return app.test_client()
 
+@pytest.mark.usefixtures("mock_current_user")
 def test_suggest_recipes_valid_request(client: FlaskClient):
     response = client.post('/api/suggest_recipes', json={
         'ingredients': ['chicken', 'rice'],
@@ -39,8 +41,8 @@ def test_suggest_recipes_valid_request(client: FlaskClient):
     })
     assert response.status_code == 200
     data = response.get_json()
-    assert 'recipes' in data
-    assert isinstance(data['recipes'], list)
+    assert 'recipe' in data
+    assert isinstance(data['recipe'], dict)
 
 def test_suggest_recipes_missing_ingredients(client: FlaskClient):
     response = client.post('/api/suggest_recipes', json={})

@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from flask_login import login_user, logout_user, login_required
+from flask_login import login_user, logout_user, login_required, current_user
 from backend.models import User
 from backend.extensions import db, bcrypt
 
@@ -45,3 +45,27 @@ def login():
 def logout():
     logout_user()
     return jsonify({"message": "Logged out successfully"}), 200
+
+@auth_blueprint.route('/api/user/preferences', methods=['GET', 'POST'])
+@login_required
+def user_preferences():
+    if request.method == 'GET':
+        # Return the user's stored dietary preferences
+        return jsonify({
+            'dietary_preferences': current_user.dietary_preferences or []
+        }), 200
+
+    if request.method == 'POST':
+        # Update the user's dietary preferences
+        data = request.get_json()
+        if not data or 'dietary_preferences' not in data:
+            return jsonify({'error': 'Missing dietary_preferences field'}), 400
+
+        dietary_preferences = data['dietary_preferences']
+        if not isinstance(dietary_preferences, list) or not all(isinstance(pref, str) for pref in dietary_preferences):
+            return jsonify({'error': 'Dietary preferences must be a list of strings'}), 422
+
+        current_user.dietary_preferences = dietary_preferences
+        db.session.commit()
+
+        return jsonify({'message': 'Dietary preferences updated successfully'}), 200
