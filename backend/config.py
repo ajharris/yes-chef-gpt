@@ -29,6 +29,11 @@ class Config:
 
     OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', 'your_openai_api_key_here')
 
+class TestConfig(Config):
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'  # Use in-memory database for tests
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
 # Test the database connection
 import psycopg2
 from psycopg2 import OperationalError

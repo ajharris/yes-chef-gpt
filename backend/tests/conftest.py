@@ -13,8 +13,10 @@ def client(app):
 
 @pytest.fixture
 def app():
-    app = create_app(test_config=True)  # or however you configure your app
+    app = create_app(config_class='backend.config.TestConfig')
     with app.app_context():
+        if not hasattr(app, 'extensions') or 'sqlalchemy' not in app.extensions:
+            db.init_app(app)  # Ensure db is initialized only if not already done
         db.create_all()  # Create all tables before tests
         # Add a test user to ensure the table is populated
         test_user = User(username='testuser', email='test@example.com')
@@ -24,3 +26,10 @@ def app():
         yield app
         db.session.remove()
         db.drop_all()
+
+@pytest.fixture
+def mock_current_user(mocker):
+    # Mock the current_user to simulate an authenticated user
+    mock_user = mocker.patch('flask_login.current_user', autospec=True)
+    mock_user.return_value = User(username='testuser', email='test@example.com', dietary_preferences=['vegan'])
+    return mock_user

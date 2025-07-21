@@ -12,6 +12,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256))
     inventory = db.relationship('Inventory', backref='user', lazy=True)
+    dietary_preferences = db.Column(db.JSON, nullable=True)  # Added field to store dietary preferences
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -28,6 +29,9 @@ class Recipe(db.Model):
     title = db.Column(db.String(128), nullable=False)
     ingredients = db.Column(db.Text, nullable=False)
     instructions = db.Column(db.Text, nullable=False)
+    preparation = db.Column(db.Text, nullable=True)  # Added field for preparation steps
+    pickup = db.Column(db.Text, nullable=True)  # Added field for pickup instructions
+    raw_ingredients = db.Column(db.JSON, nullable=True)  # Added field for raw ingredients
     fiber_content = db.Column(db.Float, nullable=True)  # in grams
     sugar_content = db.Column(db.Float, nullable=True)  # in grams
     nutrition_score = db.Column(db.Float, nullable=True)  # overall nutrition score
