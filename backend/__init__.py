@@ -60,7 +60,8 @@ def create_app(config_class='backend.config.Config'):
     @app.route('/', defaults={'path': ''})
     @app.route('/<path:path>')
     def serve_react_app(path):
-        if path != '' and os.path.exists(app.static_folder + '/' + path):
+        full_path = os.path.normpath(os.path.join(app.static_folder, path))
+        if full_path.startswith(app.static_folder) and os.path.exists(full_path):
             return send_from_directory(app.static_folder, path)
         else:
             return send_from_directory(app.static_folder, 'index.html')
