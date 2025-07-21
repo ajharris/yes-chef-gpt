@@ -36,6 +36,10 @@ def suggest_recipes():
         dietary_restrictions = current_user.dietary_preferences
     dietary_restrictions = dietary_restrictions or []
 
+    # Input validation: ingredients must be a list of strings
+    if not isinstance(ingredients, list) or not all(isinstance(i, str) for i in ingredients):
+        return jsonify({"error": "Ingredients must be a list of strings"}), 422
+
     # Check for existing recipe in the database
     existing_recipe = Recipe.query.filter_by(raw_ingredients=ingredients).first()
     if existing_recipe:
@@ -61,24 +65,61 @@ def suggest_recipes():
             ],
             max_tokens=150
         )
-        suggestions = response['choices'][0]['message']['content'].strip()
+        suggestions = response['choices'][0]['message']['content']
+        # If suggestions is a JSON string, parse it
+        import json
+        if isinstance(suggestions, str):
+            try:
+                parsed = json.loads(suggestions)
+                # If the parsed object is a dict with 'recipes' key, return as is
+                if isinstance(parsed, dict) and "recipes" in parsed:
+                    return jsonify(parsed), 200
+                # If parsed is a recipe dict, return as recipe
+                if isinstance(parsed, dict):
+                    return jsonify({"recipe": parsed}), 200
+            except Exception:
+                pass
+            # Otherwise, treat as plain text
+            lines = suggestions.strip().split("\n")
+        elif isinstance(suggestions, dict):
+            # If already a dict, return as recipe
+            return jsonify({"recipe": suggestions}), 200
+        else:
+            lines = str(suggestions).strip().split("\n")
 
-        # Parse the response into recipe components
-        lines = suggestions.split("\n")
-        ingredients = lines[1:lines.index("Preparation:")]
-        preparation = lines[lines.index("Preparation:") + 1:lines.index("Pickup:")]
-        pickup = lines[lines.index("Pickup:") + 1:]
-
+        # Robust parsing for both real and mocked responses
+        try:
+            prep_idx = lines.index("Preparation:")
+            pickup_idx = lines.index("Pickup:")
+            ingredients = lines[1:prep_idx]
+            preparation = lines[prep_idx + 1:pickup_idx]
+            pickup = lines[pickup_idx + 1:]
+        except ValueError:
+            # Fallback for mocked/simple responses
+            ingredients = []
+            preparation = []
+            pickup = []
+            for line in lines:
+                if line.startswith("Ingredients:"):
+                    ingredients.append(line.replace("Ingredients:", "").strip())
+                elif line.startswith("Preparation:"):
+                    preparation.append(line.replace("Preparation:", "").strip())
+                elif line.startswith("Pickup:"):
+                    pickup.append(line.replace("Pickup:", "").strip())
+                elif line:
+                    # If line doesn't match, add to ingredients by default
+                    ingredients.append(line.strip())
         # Save the new recipe to the database
         new_recipe = Recipe(
+            title="Suggested Recipe",
             ingredients=", ".join(ingredients),
+            instructions="",
             preparation="\n".join(preparation),
             pickup="\n".join(pickup),
             raw_ingredients=ingredients
         )
         db.session.add(new_recipe)
         db.session.commit()
-
         return jsonify({
             "recipe": {
                 "ingredients": new_recipe.ingredients,
