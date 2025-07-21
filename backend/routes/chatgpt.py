@@ -130,4 +130,4 @@ def suggest_recipes():
 
     except Exception as e:
         logger.error("Error generating recipes: %s", str(e))
-        return jsonify({'error': 'Failed to generate recipes', 'details': str(e)}), 500
+        return jsonify({'error': 'Failed to generate recipes'}), 500
