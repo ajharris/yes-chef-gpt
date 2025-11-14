@@ -32,6 +32,7 @@ Dedicated, experienced service professional with a background in restaurant kitc
 - Worked directly with clients, performers, chefs, and FOH staff to coordinate timing and needs.  
 - Known for professionalism, punctuality, and ability to adapt under pressure.  
 - Experience with long shifts, fast turnaround times, and client satisfaction.
+- Venues including the Royal Ontario Museum, Metro Toronto Convention Centre, History, Arcadian Hall, Intercontinental Event Centre (Miami), Sheraton Hotel (New Orleans), countless others...
 
 **Developer – Yes Chef GPT App**  
 *Independent Project* — *2025*  
