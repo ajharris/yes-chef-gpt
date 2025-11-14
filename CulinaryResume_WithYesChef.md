@@ -1,6 +1,5 @@
-# Your Full Name
-Your Phone Number · Your Email Address · Your City, Province  
-(LinkedIn or portfolio optional)
+# Andrew (Drew) Harris
+(226) 678-5899 · Andrew.Harris@torontomu.ca · Toronto, ON  
 
 ---
 
@@ -28,7 +27,7 @@ Dedicated, experienced service professional with a background in restaurant kitc
 ## Hospitality, Tech & Event Experience
 
 **AV Specialist / Venue Technical Lead**  
-*Various Toronto Event Venues (TMU, The National, etc.)* — *1998–Present*  
+*Various Toronto Event Venues (TMU, National Show Systems, Live Nation)* — *1998–Present*  
 - Set up and operated sound, lighting, and visual systems for conferences, weddings, and live performances.  
 - Worked directly with clients, performers, chefs, and FOH staff to coordinate timing and needs.  
 - Known for professionalism, punctuality, and ability to adapt under pressure.  
